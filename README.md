@@ -104,11 +104,65 @@ büyüme oranı gibi raporlamıyor. Bu, `mars-minimal-gene-network`'teki
 tolerance-artefaktı dersiyle aynı ailede bir uyarı — SOLVER_TOLERANCE
 zaten 1e-9'a çekili (bkz. `src/mars_fba.py`).
 
-**Henüz yapılmadı**: tam duyarlılık analizi (B. subtilis/Salinibacter
-projelerindeki `mars_duyarlilik.py` gibi, tüm parametre kombinasyonlarını
-tarayan), gen esansiyellik/silme analizi (`SOLVER_TOLERANCE=1e-9` ile),
-ve bu bulguların B. subtilis/Salinibacter karşılaştırmasıyla bir araya
-getirilmesi.
+## Duyarlılık analizi
+
+`src/mars_duyarlilik.py`, B. subtilis/Salinibacter projeleriyle AYNI
+şiddet-ekseni (t: 0=sert, 1=ılımlı) ve aynı bakım-çarpanı listesini
+kullanıyor. Sonuç, yukarıdaki ön bulguyu doğruluyor: keskin feasibility
+uçurumu, bakım çarpanına göre t≈0.40 (çarpan×1.0) ile t≈0.62 (çarpan×4.0)
+arasında. **Bu modelde uçurum, B. subtilis'tekinden bile daha keskin** —
+t*'yi 6 ondalık basamağa yuvarlayıp elle kopyalamak bile (~1e-6 hassasiyet
+kaybı) "optimal"ı "infeasible"a çevirebiliyor (bkz. `results/`).
+Sonuçlar: `results/duyarlilik_sonuclari.csv`, `results/buyume_vs_siddet.png`.
+
+## Gen esansiyellik/silme analizi — DOĞRULANMIŞ SONUÇ
+
+`src/mars_gen_silme.py`, referans (kısıtsız) + üç Mars senaryosu
+(bakım çarpanı ×1.5/×2.0/×3.0, her biri WT büyümenin referansın en az
+%5'i olduğu, 5x bağımsız tekrarla doğrulanmış "rahat" bir noktada) için
+155 genin tek tek silinmesini test ediyor.
+
+**Bu analiz sırasında İKİ ayrı hata canlı yakalanıp düzeltildi** (ayrıntı
+için `src/mars_gen_silme.py` docstring'i):
+
+1. cobra'nın standart gen-silme mekanizması, infeasible olan KO'larda
+   `growth` alanını `NaN` bırakıyor; `oran = growth/wt_büyüme` de `NaN`
+   olunca `oran < eşik` pandas'ta HER ZAMAN `False` dönüyor — yani
+   infeasible (en kesin esansiyel durum!) YANLIŞLIKLA "esansiyel değil"
+   sayılıyordu. İlk çalıştırmada bu, "0 esansiyel gen" gibi biyolojik
+   olarak imkânsız bir sonuca yol açtı. Düzeltilince gerçek tablo ortaya
+   çıktı: **referansta 114/155 (%73.5) esansiyel, Mars'ın üç senaryosunda
+   da TUTARLI şekilde 118/155 (%76.1) esansiyel** — makalenin bildirdiği
+   in silico %79 esansiyellik oranına yakın, bağımsız bir doğrulama.
+2. NGAM'ın `ATPase` bileşenine bağlı 8 gen (F1F0-ATP sentaz alt
+   birimleri, MMSYN1_0789-0796) "silindiğinde" büyüme ARTIYOR (bu bir
+   hata değil, modelin NGAM'ı gen-ilişkili bir reaksiyon üzerinden
+   dayatmasının yapısal bir sonucu — bkz. kaynak kodu docstring'i). Bu 8
+   gen için model esansiyellik çıkarımı muhtemelen gerçek biyolojiyle
+   çelişiyor; sonuç tablosunda ayrıca işaretleniyor (`atpase_geni_mi`
+   sütunu), makalede bir sınırlama olarak belirtilecek.
+
+**Ana bulgu — Mars'a özgü 4 yeni esansiyel gen** (üç Mars senaryosunun
+DA HEPSİNDE tutarlı, referansta esansiyel değil):
+`MMSYN1_0227, MMSYN1_0228, MMSYN1_0229, MMSYN1_0230`. Bu dört gen
+birlikte **piruvat dehidrogenaz (PDH) → fosfotransasetilaz (PTAr) →
+asetat kinaz (ACKr)** yolunu kodluyor — piruvattan asetil-CoA/NADH
+üretimi, ardından asetat kinaz üzerinden **ek ATP** (substrat düzeyinde
+fosforilasyon) üretimi. Yorum: zengin/kısıtsız ortamda hücre bu ekstra
+ATP kaynağı olmadan da (daha yavaş) büyüyebiliyor (referans oran=0.63);
+ama Mars'ın sıkılaştırılmış enerji bütçesinde (kısıtlı glikoz/O2 + artmış
+bakım) bu yol vazgeçilmez hale geliyor. Bu, B. subtilis projesindeki
+`dltABCD` bulgusunun (Mars'ta esansiyellikten ÇIKAN genler) TERSİ
+yönünde ama aynı ailede bir bulgu: enerji darboğazı, ATP üretimine
+katkısı olan HER yolu kritikleştiriyor.
+
+Sonuçlar: `results/gen_silme_sonuclari.csv`,
+`results/mars_yeni_esansiyel_genler.csv`,
+`results/mars_dispanse_olan_genler.csv` (bu proje için boş — hiçbir gen
+dispanse olmuyor).
+
+**Henüz yapılmadı**: B. subtilis/Salinibacter/JCVI-syn3A karşılaştırmalı
+"kısıtlayıcı darboğaz" tablosunun bir araya getirilmesi.
 
 ## Kurulum
 
@@ -131,7 +185,9 @@ python src/mars_fba.py
 │       └── iMMSYN.xml.gz     # JCVI-syn3A modeli (Breuer ve ark. 2019, Supp. file 9)
 ├── results/
 └── src/
-    └── mars_fba.py           # Model yükleme + Mars kısıtları + FBA
+    ├── mars_fba.py           # Model yükleme + Mars kısıtları + FBA
+    ├── mars_duyarlilik.py    # Duyarlılık analizi + grafik
+    └── mars_gen_silme.py     # Tekli gen silme (SOLVER_TOLERANCE=1e-9)
 ```
 
 ## Kaynaklar

@@ -93,11 +93,34 @@ def referans_buyume(model):
 
 
 def bakim_reaksiyonunu_bul(model):
-    """NGAM'ın ATPase bileşenini bulur. Bkz. modül docstring'i -- bu reaksiyon
-    ters yönde yazılmış, sabitleyen kısıt upper_bound'dur (negatif değer)."""
+    """NGAM'ın ATPase bileşenini bulur ve standart yöne çevirir.
+
+    DÜZELTME (bu projede canlı yakalanan bir gen-silme hatası): modelin
+    yayınlanmış hali bu reaksiyonu TERS yönde yazıyor (adp+4h_e+pi <--
+    atp+h2o+3h_c), sabitleyen kısıt upper_bound=-0.575 (zorunlu bir NEGATİF
+    akış). cobra'nın standart gen-silme mekanizması bir geni sildiğinde
+    ilgili reaksiyonun sınırlarını (0,0)'a çeker -- bu reaksiyon için bu,
+    "kapasiteyi kaldırmak" değil "zorunlu ATP-tüketim yükünü kaldırmak"
+    anlamına geliyor. Sonuç: ATPase'in tek genlerinden biri "silindiğinde"
+    büyüme DÜŞMÜYOR, tam tersi ARTIYOR (0.342 -> 0.346) -- gen-silme
+    analizini anlamsızlaştıran bir bulgu.
+    Çözüm: reaksiyonun stokiyometrisini -1 ile çarpıp standart yöne
+    çeviriyoruz (pozitif akış = fizyolojik ATP hidrolizi/bakım), sınırları
+    da buna göre çeviriyoruz: eski (-1000, -0.575) -> yeni (0.575, 1000).
+    Bu, artık iYO844'teki ATPM ile birebir aynı sözleşmeyi (lower_bound =
+    zorunlu minimum bakım akışı) taşıyor -- gen-silme (0,0) sınırı artık
+    doğru şekilde "kapasiteyi kaldırmak" anlamına geliyor.
+    """
     atpase = model.reactions.get_by_id("ATPase")
-    print(f"Bakım (NGAM/ATPase) reaksiyonu: {atpase.id} | mevcut sınırlar: {atpase.bounds} "
-          f"| rxn: {atpase.reaction}")
+    eski_sinirlar = atpase.bounds
+    eski_rxn = atpase.reaction
+    # Stokiyometriyi tersine çevir: her katsayıya -2x ekleyerek net -1x'e getir.
+    atpase.add_metabolites({met: -2 * katsayi for met, katsayi in atpase.metabolites.items()})
+    yeni_alt = -eski_sinirlar[1]
+    yeni_ust = -eski_sinirlar[0]
+    atpase.bounds = (yeni_alt, yeni_ust)
+    print(f"Bakım (NGAM/ATPase) reaksiyonu: {atpase.id} | standart yöne çevrildi "
+          f"({eski_rxn} [{eski_sinirlar}] -> {atpase.reaction} [{atpase.bounds}])")
     return atpase
 
 
@@ -119,21 +142,23 @@ def mars_kisitlarini_uygula(
     model.reactions.EX_h2o_e.bounds = (-h2o_cap, h2o_cap)
 
     # Bakım enerjisi: radyasyon hasarını onarmak ek ATP gerektirir -> NGAM'ın ATPase
-    # bileşenini "bakim_carpani" kat artırıyoruz. ATPase ters yönde yazılmış olduğu
-    # için sabitleyen kısıt UPPER_bound'dur (negatif); lower_bound -1000'de sabit kalır.
+    # bileşenini "bakim_carpani" kat artırıyoruz. bakim_reaksiyonunu_bul() artık
+    # ATPase'i standart yöne çevirdiği için (bkz. o fonksiyonun docstring'i),
+    # sabitleyen kısıt artık iYO844'teki ATPM ile birebir aynı: LOWER_bound
+    # (pozitif, zorunlu minimum akış).
     #
     # DİKKAT (mars-minimal-gene-network'te öğrenilen bir üretim hatasından ders):
     # çarpanı reaksiyonun O ANKİ sınırına uygularsak, aynı model/atpase nesnesi
     # birden çok kez (ör. bir tarama döngüsünde) bu fonksiyondan geçirildiğinde
     # değer her seferinde katlanarak büyür. Bunu önlemek için taban değeri HER
     # ZAMAN açıkça bilinen bir referanstan alınır: çağıran "bakim_taban" vermezse,
-    # atpase.upper_bound SADECE bu fonksiyon hiç çağrılmamışsa (yani hâlâ modelin
+    # atpase.lower_bound SADECE bu fonksiyon hiç çağrılmamışsa (yani hâlâ modelin
     # orijinal değeriyse) taban olarak kabul edilir -- modeli tekrar kullanan
-    # çağıranlar (ör. ileride bir duyarlılık analizi) bakim_taban'ı MUTLAKA
-    # açıkça vermeli.
-    taban = bakim_taban if bakim_taban is not None else atpase.upper_bound
-    yeni_ust_sinir = taban * bakim_carpani
-    atpase.bounds = (-1000, yeni_ust_sinir)
+    # çağıranlar (ör. duyarlılık/gen silme analizi) bakim_taban'ı MUTLAKA açıkça
+    # vermeli.
+    taban = bakim_taban if bakim_taban is not None else atpase.lower_bound
+    yeni_alt_sinir = taban * bakim_carpani
+    atpase.bounds = (yeni_alt_sinir, 1000)
     if not sessiz:
         print(f"Yeni bakım (NGAM/ATPase) sınırı: {atpase.bounds}")
 

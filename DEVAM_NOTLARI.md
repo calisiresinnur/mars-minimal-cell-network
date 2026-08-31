@@ -46,32 +46,63 @@ dersi, git commit/push blanket onayı gibi genel dersler hâlâ geçerli).
    büyüme≈0.0016/saat) ile -0.75 (infeasible) arasında keskin bir uçurum
    var. Detay ve yorum için README > "Şu ana kadarki bulgu".
 
+## Devam — 2026-08-31 (aynı gün, ikinci tur)
+
+**TAMAMLANDI**: duyarlılık analizi (`src/mars_duyarlilik.py`) ve gen
+esansiyellik/silme analizi (`src/mars_gen_silme.py`). GitHub'a push edildi
+(`gh` CLI kuruldu + kullanıcı girişi yapıldı, repo oluşturuldu, push
+edildi: https://github.com/calisiresinnur/mars-minimal-cell-network).
+
+**Bu turda canlı yakalanıp düzeltilen 3 ayrı hata** (hepsi kaynak kodu
+docstring'lerinde belgelendi, bkz. `src/mars_fba.py` ve
+`src/mars_gen_silme.py`):
+
+1. `ATPase` reaksiyonu ters yönde yazılmıştı (`mars_fba.py`); standart
+   yöne çevrildi (artık iYO844'teki ATPM ile aynı `lower_bound` sözleşmesi).
+   NOT: bu, gen-silme paradoksunu (aşağıya bkz.) ÇÖZMEDİ -- (0,0) sınırı
+   yön bağımsız, ayrı bir yapısal sınırlama olduğu anlaşıldı.
+2. t* (tam feasibility sınırı) civarındaki noktalar bu modelde AŞIRI
+   kırılgan çıktı -- 1e-6 mertebesinde bir yuvarlama bile feasible/
+   infeasible değiştirebiliyor. Bu yüzden gen-silme senaryoları t*+0.01
+   yerine "WT büyüme ≥ referansın %5'i + 5x tekrarla doğrulanmış" noktalar
+   olarak seçildi.
+3. **KRİTİK essentiality hatası**: infeasible KO'larda `growth=NaN` →
+   `oran=NaN` → `NaN < eşik` pandas'ta HER ZAMAN `False` → infeasible
+   (en kesin esansiyel durum) yanlışlıkla "esansiyel değil" sayılıyordu.
+   İlk çalıştırmada "0 esansiyel gen" gibi imkânsız bir sonuç çıktı.
+   Düzeltilince: **referans %73.5 (114/155), Mars'ın 3 senaryosunda da
+   TUTARLI %76.1 (118/155)** -- makalenin %79 in silico rakamına yakın,
+   bağımsız doğrulama.
+
+**ANA BULGU**: Mars'a özgü 4 yeni esansiyel gen (3 Mars senaryosunun
+HEPSİNDE tutarlı): `MMSYN1_0227/0228/0229/0230` = piruvat dehidrogenaz →
+fosfotransasetilaz → asetat kinaz yolu (ekstra ATP üretimi, substrat
+düzeyinde fosforilasyon). Referansta esansiyel değil (oran=0.63) ama
+Mars'ın sıkı enerji bütçesinde vazgeçilmez hale geliyor. Detay: README >
+"Gen esansiyellik/silme analizi".
+
+Ayrıca: NGAM/ATPase'e bağlı 8 gen (MMSYN1_0789-0796) "silindiğinde"
+büyüme ARTIYOR -- hata değil, NGAM'ın gen-ilişkili bir reaksiyon üzerinden
+dayatılmasının yapısal sonucu; makalede bir model sınırlaması olarak
+belirtilmeli.
+
 ## Henüz yapılmadı / sıradaki somut adımlar
 
-1. **Tam duyarlılık analizi** — B. subtilis/Salinibacter projelerindeki
-   `mars_duyarlilik.py` şablonunu al, dört parametreyi (o2_lb, glc_lb,
-   h2o_cap, bakim_carpani) tarayan bir `src/mars_duyarlilik.py` yaz.
-   Özellikle glc_lb ekseni etrafında ince taramaya odaklan (uçurum -0.8/
-   -0.75 civarında).
-2. **Gen esansiyellik/silme analizi** — `src/mars_gen_silme.py` şablonunu
-   al, `SOLVER_TOLERANCE = 1e-9`'u BAŞTAN uygula (bkz. ana projedeki
-   kritik ders). Feasible bir Mars parametre noktası seçmek gerekecek
-   (ör. glc_lb=-0.8 civarı, infeasible noktada essentiality analizi
-   anlamsız).
-3. **Üç modelin karşılaştırılması**: B. subtilis (su-kısıtlı uçurum),
-   Salinibacter (uçurum yok, doğrusal), JCVI-syn3A (glikoz-kısıtlı
-   uçurum) — üç farklı "kısıtlayıcı darboğaz" profili ortaya çıktı. Bu,
+1. **Üç modelin karşılaştırılması**: B. subtilis (su-kısıtlı uçurum, Mars
+   esansiyelliği DEĞİŞTİRMİYOR), Salinibacter (uçurum yok, doğrusal,
+   esansiyellik değişmiyor), JCVI-syn3A (glikoz-kısıtlı uçurum, Mars 4
+   YENİ esansiyel gen EKLİYOR — PDH/PTA/ACK yolu). Bu üç farklı
+   "kısıtlayıcı darboğaz + esansiyellik tepkisi" profili muhtemelen
    makalenin ana karşılaştırma bulgusu olabilir; ayrı bir
    `karsilastirma.py`/tablo ile bir araya getirilmeli.
-4. **GitHub'a push** — yerel git init/commit yapıldıktan sonra kullanıcıya
-   yeni bir GitHub reposu (`mars-minimal-cell-network`) oluşturup push
-   etme izni ayrıca soruldu/soruluyor (önceki blanket onay mevcut bir
-   repoya commit/push için verilmişti, yeni bir public repo açmak farklı
-   bir eylem olarak ayrıca teyit edildi).
-5. **README'de dürüstlük notu eklenmeli**: referans ortamın (zengin/
+2. **README'de dürüstlük notu eklenmeli**: referans ortamın (zengin/
    tanımsız) B. subtilis/Salinibacter'deki tanımlı-ortam referanslarından
    niteliksel farkı, makalede/README'de MUTLAKA vurgulanmalı — aksi halde
    üç model arası büyüme oranı karşılaştırması yanıltıcı olur.
+3. ATPase-bağlı 8 genin essentiality paradoksu için literatürde JCVI-
+   syn3A'da oksidatif fosforilasyonun/ATP sentazın gerçek rolü araştırılıp
+   README'ye bir yorum eklenebilir (şu an sadece model sınırlaması olarak
+   not düşüldü, biyolojik yorum yapılmadı).
 
 ## Genel hatırlatmalar (ana projeden taşınan, hâlâ geçerli)
 
