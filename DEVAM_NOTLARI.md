@@ -183,6 +183,20 @@ tartışılacak/karara bağlanacak)**:
    bağlanmalı -- burada sadece ilk fikirler not düşüldü, HİÇBİRİ
    doğrulanmadı.
 
+## Devam — 2026-08-31 (beşinci tur: üçüncü kardeş proje açıldı)
+
+Kullanıcı bu projede gen ekleme YAPILMAMASI kararını verdi (yukarıya
+bkz.). Aynı soru artık **AYRI bir projede** sürdürülüyor:
+`C:\Users\Ergün\Belgeler\mars-hybrid-organism-network` — baz organizma
+olarak **Cyanothece sp. ATCC 51142 (iCce806)** seçildi (doğrulanmış
+prototrofik + fotoototrof + diazotrof, JCVI-syn3A'nın auxotrofi tuzağı
+yok). Ayrıca kullanıcıyla "tardigrade genleri eklenebilir mi" tartışması
+sonucu bir **iki katmanlı mimari** (Katman A: FBA-metabolik, Katman B:
+yapısal/koruyucu — Dsup vb., FBA-dışı) benimsendi. Detaylar için o
+projenin kendi DEVAM_NOTLARI.md'sine bak. Bu proje (mars-minimal-cell-
+network) artık pasif — sadece referans/karşılaştırma kaynağı olarak
+kalıyor.
+
 ## Henüz yapılmadı / sıradaki somut adımlar
 
 1. **Üç modelin karşılaştırılması**: B. subtilis (su-kısıtlı uçurum, Mars
