@@ -212,6 +212,68 @@ dispanse olmuyor).
 **Henüz yapılmadı**: B. subtilis/Salinibacter/JCVI-syn3A karşılaştırmalı
 "kısıtlayıcı darboğaz" tablosunun bir araya getirilmesi.
 
+## ⚠️ ANA BULGU — JCVI-syn3A, desteksiz Mars yüzeyinde YAPISAL olarak imkânsız
+
+Yukarıdaki tüm analiz (referans + Mars senaryoları), modelin **zengin/
+tanımsız varsayılan ortamını** temel alıyor — yani örtük olarak "bir
+habitat/besin deposu zaten var, biz sadece atmosfer/enerji/radyasyon
+etkisini test ediyoruz" varsayımını taşıyor. Bu varsayım hiç açıkça
+yazılmamıştı; kullanıcının "gerçek Mars koşullarını iyice araştır, Dünya'da
+esansiyel ama Mars'ta bulunamayan bir kaynak varsa organizmanın onsuz
+hayatta kalabilmesini kurgula" yönlendirmesiyle test edildi.
+
+**Test**: Modelin ~85 exchange reaksiyonu, Mars'ta gerçekten bulunabilecek
+İNORGANİK kaynaklarla (CO2 — bol, NH3 — regolitteki nitrattan indirgeme
+varsayımıyla [Stern ve ark. 2015, PNAS, PMC4394254 — Gale krateri
+regolitinde 110-1100 ppm biyokimyasal olarak erişilebilir nitrat], Ca/Cl/
+K/Mg/Na/fosfat — regolitte mevcut, eser O2, kısıtlı su) sınırlandırıldı,
+TÜM organik/kompleks besinler (amino asitler, nükleobaz/nükleositler,
+vitaminler, lipidler) kapatıldı.
+
+**Sonuç**: Model **kesinlikle infeasible** — glikoz (bir enerji kaynağı
+sağlandığı varsayımıyla) eklense bile. Kategori bazlı "leave-one-out"
+testi, hangi besin sınıflarının MUTLAK zorunlu olduğunu gösterdi:
+
+| Kategori | Çıkarılınca | Yorum |
+|---|---|---|
+| Amino asitler (20) | **infeasible** | Zorunlu |
+| Nükleobaz/nükleosit | **infeasible** | Zorunlu |
+| Vitamin/kofaktör (B-kompleksi, CoA) | **infeasible** | Zorunlu |
+| Lipid (kolesterol, yağ asidi, spermin) | **infeasible** | Zorunlu |
+| Tetra-peptidler | fark etmiyor | Gereksiz (düz amino asit yeterli) |
+| Diğer şeker/organik asitler | fark etmiyor | Gereksiz (glikoz yeterli) |
+
+**Kök neden — bu JCVI-syn3A'ya özgü DEĞİL, tüm Mycoplasma (Mollicutes)
+soyunun evrimsel bir özelliği**: Modelin 339 reaksiyonu tek tek
+incelendiğinde amino asit/vitamin/nükleobaz/yağ asidi biyosentezi için
+SIFIR reaksiyon bulundu — sadece tRNA-yükleme (amino asit için) ve ABC-
+taşıyıcı ithalat (vitamin için) ve kurtarma yolları (nükleotid için) var.
+Literatür taraması bunu doğruluyor: Mycoplasma türleri (M. genitalium,
+M. synoviae, M. hyopneumoniae) ve JCVI-syn3A'nın **atası M. mycoides**
+de doğal halde bu genlerden yoksun — "degeneratif evrim" yoluyla obligat
+parazitik yaşam tarzına adaptasyon, onlarca milyon yıllık bir süreç,
+sentetik minimizasyonla ilgisi yok. Yani bu genler "minimizasyon
+sırasında çıkarıldı" değil, **soyun kendisinde hiç var olmadı** — geri
+eklenecek doğal bir kaynak (ata tür, akraba tür) yok. Ekleme ancak
+Mycoplasma soyunun tamamen dışından (prototrofik, uzak bir bakteriden)
+tür-ötesi bir sentetik biyoloji varsayımıyla mümkün olurdu — bu proje
+kapsamında BUNU YAPMIYORUZ (kullanıcı kararı, 2026-08-31).
+
+**Sonuç/yorum**: "Mars'ta hayatta kalmak için gereken minimum gen seti"
+sorusu, JCVI-syn3A'nın kendi 155 geninin essentiality'sine bakılarak
+cevaplanamaz — çünkü asıl darboğaz hangi genin esansiyel olduğu değil,
+**hangi biyosentez SINIFLARININ tamamen yok olduğu**. Bu proje, bu
+soruyu JCVI-syn3A üzerinden daha fazla ilerletmeyecek; aynı araştırma
+sorusu, biyosentetik açıdan daha eksiksiz (prototrofik) bir baz organizma
+ile AYRI bir projede sürdürülecek (bkz. DEVAM_NOTLARI.md).
+
+Kaynaklar: Stern JC, Sutter B, Freissinet C, et al. (2015) Evidence for
+indigenous nitrogen in sedimentary and aeolian deposits from the
+Curiosity rover investigations at Gale crater, Mars. *PNAS* 112(14):
+4245-4250. PMC4394254. | Mycoplasma auxotrofisi için: genel Mollicutes
+literatürü (bkz. ScienceDirect "Mycoplasma" ve "Mycoplasma mycoides"
+genel bakış makaleleri, WebSearch ile 2026-08-31 tarihinde tarandı).
+
 ## Kurulum
 
 ```bash

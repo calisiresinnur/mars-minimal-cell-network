@@ -123,6 +123,66 @@ Mars'ın 3 senaryosu da TUTARLI 127/155 (%81.9). Ana bulgu (4 yeni
 esansiyel gen: MMSYN1_0227-0230, PDH→PTA→ACK yolu) değişmedi, sadece
 aggregate sayılar düzeltildi.
 
+## Devam — 2026-08-31 (dördüncü tur: gerçek Mars kaynak kısıtı + proje durduruldu)
+
+Kullanıcının önceki turdaki uyarısı ("makaleye uydurma") üzerine gündeme
+gelen bir başka soru derinleşti: essentiality analizinin TAMAMI, modelin
+zengin/tanımsız varsayılan ortamını temel alıyordu -- örtük olarak "bir
+habitat/besin deposu var" varsayıyordu. Kullanıcı, gerçek Mars kaynak
+kısıtlarını (hangi besin gerçekten Mars'ta var) araştırıp bu varsayımı
+sınamamı istedi.
+
+**Bulgu (bkz. README > "ANA BULGU")**: Modelin ~85 exchange reaksiyonu
+tek tek Mars-gerçekçiliği açısından test edildi. Sadece gerçekten Mars'ta
+bulunan inorganik kaynaklarla (CO2, nitrat->amonyak varsayımı, mineraller,
+eser O2/su, hatta glikoz sağlansa bile) model KESİNLİKLE infeasible.
+Kategori-bazlı leave-one-out testi: amino asit, nükleobaz/nükleosit,
+vitamin/kofaktör, lipid kategorilerinin HEPSİ ayrı ayrı zorunlu (tetra-
+peptid ve diğer şekerler gereksiz).
+
+**Kök neden araştırması**: Modelin 339 reaksiyonu tek tek tarandı --
+amino asit/vitamin/nükleobaz/yağ asidi biyosentezi için SIFIR reaksiyon
+var (sadece tRNA-yükleme/ABC-ithalat/kurtarma yolları). Literatür taraması
+bunun JCVI-syn3A'ya özgü olmadığını, TÜM Mycoplasma (Mollicutes) soyunun
+("degeneratif evrim", obligat parazitizm, onlarca milyon yıllık) ortak
+özelliği olduğunu doğruladı -- JCVI-syn3A'nın atası M. mycoides de doğal
+halde bu genlerden yoksun. Yani geri eklenecek doğal bir kaynak (akraba
+tür) yok; ekleme ancak tür-ötesi (Mycoplasma dışı, prototrofik bir
+bakteriden) hipotetik mühendislikle mümkün.
+
+**KULLANICI KARARI (2026-08-31)**: Bu projede gen ekleme YAPILMAYACAK.
+Proje bu bulguyla burada durduruluyor. Aynı araştırma sorusu ("Mars'ta
+hayatta kalmak için minimum gen seti nedir"), biyosentetik açıdan daha
+eksiksiz (prototrofik) bir BAZ ORGANİZMA ile YENİ, AYRI bir projede
+sürdürülecek. Kullanıcı özellikle şunu vurguladı: **"seçtiğimiz bazın
+özellikleri çok önemli, bu projeye en uygun bazı seçmeliyiz"** -- yeni
+organizma seçimi dikkatli yapılmalı.
+
+**Yeni proje için baz organizma seçim kriterleri (bir sonraki sohbette
+tartışılacak/karara bağlanacak)**:
+1. **Prototrofik olmalı** (en azından amino asit/nükleotid biyosentezi
+   yapabilmeli) -- Mollicutes/Mycoplasma sınıfından KAÇINILMALI (bu sınıfın
+   tamamı auxotrof, bkz. yukarıdaki bulgu). Bu, iJL208/Mesoplasma florum'u
+   da muhtemelen ELER (Mesoplasma da bir Mollicute, aynı sorunu taşıyabilir
+   -- YENİ SOHBETTE BU DOĞRULANMALI, henüz kontrol edilmedi).
+2. Gerçek, indirilebilir, kürasyonu yapılmış bir GEM'i olmalı (SBML/JSON).
+3. Tercihen "minimal genom" veya "ekstremofil" araştırmasıyla ilgisi olan,
+   ama GERÇEKTEN serbest-yaşayan (parazitik değil) bir organizma.
+4. Aday fikirler (henüz araştırılmadı, sadece ilk beyin fırtınası):
+   - **Pelagibacter ubique (SAR11)** -- bilinen en küçük serbest-yaşayan
+     bakteri genomu (~1.3 Mb), ama prototrofik (deniz oligotrofu, düşük
+     besin ortamına adapte). Felsefi olarak "minimal kaynakla hayatta
+     kalma" temasına çok uyuyor. GEM'i var mı araştırılmalı.
+   - **Deinococcus radiodurans** -- radyasyon direnciyle ünlü, Mars
+     radyasyon teması için doğrudan ilgili. Genomu küçük değil (~3.28 Mb)
+     ama GEM'i olabilir.
+   - B. subtilis/Salinibacter'i (ana projede zaten var) farklı bir açıdan
+     (örn. gerçekçi Mars besin kısıtıyla) yeniden test etmek de bir
+     seçenek -- yeni bir organizma bulmak yerine.
+   Bu adaylar YENİ sohbette araştırılıp kullanıcıyla birlikte karara
+   bağlanmalı -- burada sadece ilk fikirler not düşüldü, HİÇBİRİ
+   doğrulanmadı.
+
 ## Henüz yapılmadı / sıradaki somut adımlar
 
 1. **Üç modelin karşılaştırılması**: B. subtilis (su-kısıtlı uçurum, Mars
