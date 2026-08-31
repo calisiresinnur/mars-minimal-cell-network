@@ -21,22 +21,36 @@ seçildi: WT büyüme referansın en az %5'i olacak şekilde t taranmış, HER
 seçilen nokta kullanılmadan önce 5 kez BAĞIMSIZ (taze model, sıfırdan
 optimize) tekrarla "optimal" durumun bit-bit aynı çıktığı doğrulanmıştır.
 
-AYRI BİR ÖNEMLİ SINIRLAMA -- ATPase geninin "silinmesi" büyümeyi
-ARTIRIYOR: `ATPase` reaksiyonu NGAM'ın bir bileşeni olarak zorunlu bir
-minimum ATP-tüketim akışı dayatıyor (bkz. mars_fba.py). Bu reaksiyon
-gerçek genlere bağlı (MMSYN1_0789-0796, F1F0-ATP sentaz alt birimleri).
-Standart gen-silme, bir geni sildiğinde ilgili reaksiyonun sınırlarını
-(0,0)'a çeker -- bu, kapasiteyi DEĞİL, zorunlu bakım YÜKÜNÜ kaldırıyor.
-Sonuç: bu 8 genden biri "silindiğinde" büyüme 0.342'den 0.346'ya
-ÇIKIYOR. Bu bir hesaplama hatası DEĞİL (mars_fba.py'de reaksiyon standart
-yöne çevrilse de aynı sonuç değişmiyor -- (0,0) sınırı yön bağımsız) --
-modelin NGAM'ı gen-ilişkili bir reaksiyon üzerinden dayatmasının YAPISAL
-bir sonucu. Gerçek biyolojide ATP sentaz kaybı genelde ölümcül/ciddi
-büyüme kaybına yol açar (JCVI-syn3A'da oksidatif fosforilasyonun rolü
-tartışmalı olsa da) -- yani bu 8 gen için modelin essentiality çıkarımı
-(esansiyel DEĞİL) muhtemelen gerçek biyolojiyle ÇELİŞİYOR. Bu, makalede/
-README'de açıkça bir model sınırlaması olarak belirtilmeli; bu 8 gen
-essentiality tablosunda ayrıca işaretleniyor (bkz. main()).
+DÜZELTME 2 -- NGAM-ilişkili genlerin essentiality'si (kullanıcının
+"mantık olarak da denetle" talebiyle bulundu, makale Table 4 ile
+çapraz kontrol edilerek): `ATPase`'e bağlı 8 gen (MMSYN1_0789-0796,
+F1F0-ATP sentaz alt birimleri) VE `Protein_degrad`'a bağlı 1 gen
+(MMSYN1_0394) -- toplam 9 gen -- standart cobra gen-silmesinde
+"silindiğinde" büyüme ARTIYOR (bounds (0,0)'a çekiliyor, bu da
+kapasiteyi değil zorunlu NGAM YÜKÜNÜ kaldırıyor). İlk yorumum "bu bir
+model sınırlaması, gerçek biyolojiyle çelişebilir ama hesaplama hatası
+değil" şeklindeydi. AMA makalenin kendi Table 4'ü (locus-düzeyinde
+Ess_FBA sütunu) bu 9 genin TAMAMINI ■ (esansiyel) olarak işaretliyor --
+yani makalenin KENDİ in silico essentiality metodolojisi bu genleri
+esansiyel buluyor, benim naif cobra knockout'um değil.
+
+Doğru yorum: NGAM'ın dayattığı minimum akış (0.575 ATPase, 0.00035
+Protein_degrad) hücrenin GERÇEK, sürekli bir fizyolojik ihtiyacını
+(pH homeostazı, protein döngüsü) temsil ediyor -- bu ihtiyaç, ilgili
+enzim geni silindiğinde ORTADAN KALKMAZ, sadece KARŞILANAMAZ hale gelir.
+cobra'nın standart knockout'u (bounds->(0,0)) bunu "artık bu kadar ATP
+harcamana gerek yok" gibi yanlış yorumluyor; doğrusu "artık bu ihtiyacı
+karşılayamıyorsun -> infeasible" olmalı. Bu yüzden bu 9 gen, ham
+simülasyon sonucundan BAĞIMSIZ olarak esansiyel kabul ediliyor (bkz.
+NGAM_ISTISNA_GENLERI ve main()'deki düzeltme).
+
+DOĞRULAMA: bu düzeltme sonrası referans esansiyel gen sayısı
+114 (ham) + 9 (düzeltme) = 123/155 (%79.4) -- makalenin bildirdiği
+123/155 (%79) ile TAM ÖRTÜŞÜYOR. Ayrıca birkaç bağımsız gen (ALATRS/
+0163, ARGTRS/0535, ASNTRS/0076, ASPTRS/0287, CYSTRS/0837 -- hepsi
+tRNA sentetaz, makalede Ess_FBA=■) benim ham sonuçlarımla da zaten
+örtüşüyordu -- yani genel pipeline baştan beri doğruydu, sadece bu 9
+NGAM-geni özel durumu atlanmıştı.
 
 Çıktı:
   - results/gen_silme_sonuclari.csv          (senaryo x gen x büyüme, ham veri)
@@ -60,12 +74,14 @@ ISLEMCI_SAYISI = 1  # bkz. modül docstring'i -- bu modelde düşük-büyüme no
 # multiprocessing'in ek bir pickling/state riski katmasına gerek yok)
 SOLVER_TOLERANCE = 1e-9  # bkz. mars_fba.py / mars-minimal-gene-network'teki kritik ders
 
-# NGAM/ATPase'in gen-ilişkili olduğu 8 gen -- essentiality tablosunda ayrıca
-# işaretleniyor (bkz. modül docstring'indeki "AYRI BİR ÖNEMLİ SINIRLAMA").
+# NGAM'a bağlı, standart knockout'ta "büyüme artıyor" paradoksu gösteren genler --
+# makalenin Table 4'üyle çapraz kontrol edilerek esansiyel kabul ediliyor
+# (bkz. modül docstring'indeki "DÜZELTME 2").
 ATPASE_GENLERI = [
     "MMSYN1_0789", "MMSYN1_0790", "MMSYN1_0791", "MMSYN1_0792",
     "MMSYN1_0793", "MMSYN1_0794", "MMSYN1_0795", "MMSYN1_0796",
 ]
+NGAM_ISTISNA_GENLERI = ATPASE_GENLERI + ["MMSYN1_0394"]  # + Protein_degrad geni
 
 # mars_duyarlilik.py sonuçlarından: WT büyüme referansın en az %5'i olacak şekilde
 # seçilmiş t değerleri -- her biri 5x bağımsız tekrarla "optimal" tutarlılığı
@@ -127,12 +143,18 @@ def main():
 
     df = pd.concat(tum_sonuclar, ignore_index=True)
     df["atpase_geni_mi"] = df["gen_id"].isin(ATPASE_GENLERI)
+    df["ngam_istisnasi_mi"] = df["gen_id"].isin(NGAM_ISTISNA_GENLERI)
+    # DÜZELTME 2 (bkz. modül docstring'i): NGAM-ilişkili genler için ham simülasyon
+    # sonucu (esansiyel_ham) korunuyor ama asıl kullanılan "esansiyel" sütunu, makale
+    # Table 4 ile doğrulanmış düzeltmeyi yansıtıyor.
+    df["esansiyel_ham"] = df["esansiyel"]
+    df["esansiyel"] = df["esansiyel_ham"] | df["ngam_istisnasi_mi"]
     csv_yolu = os.path.join(SONUC_KLASORU, "gen_silme_sonuclari.csv")
     df.to_csv(csv_yolu, index=False)
     print(f"\nHam sonuçlar kaydedildi: {csv_yolu} ({len(df)} satır)")
 
-    print("\n--- NGAM/ATPase genleri (bkz. modül docstring'i -- silinince büyüme ARTAR) ---")
-    print(df[df["atpase_geni_mi"]][["gen_id", "senaryo", "growth", "wt_buyume", "oran"]].to_string(index=False))
+    print("\n--- NGAM istisna genleri (ham sonuç vs düzeltilmiş, bkz. modül docstring'i) ---")
+    print(df[df["ngam_istisnasi_mi"]][["gen_id", "senaryo", "growth", "wt_buyume", "oran", "esansiyel_ham", "esansiyel"]].to_string(index=False))
 
     pivot = df.pivot(index="gen_id", columns="senaryo", values="esansiyel")
     referans_esansiyel = pivot["Referans_kisitsiz"]

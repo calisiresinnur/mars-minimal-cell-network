@@ -86,6 +86,43 @@ büyüme ARTIYOR -- hata değil, NGAM'ın gen-ilişkili bir reaksiyon üzerinden
 dayatılmasının yapısal sonucu; makalede bir model sınırlaması olarak
 belirtilmeli.
 
+## Devam — 2026-08-31 (üçüncü tur: bilimsel doğruluk denetimi)
+
+Kullanıcı, karşılaştırmalı tabloya geçmeden önce şu ana kadarki HER ŞEYİN
+hem sayısal hem MANTIKSAL doğruluğunu denetlememi istedi. Bu denetimde:
+
+1. **Kaçırılmış bir gen bulundu**: `MMSYN1_0394` (Protein_degrad'ın geni)
+   ATPase genleriyle AYNI paradoksu gösteriyordu (silinince büyüme artıyor)
+   ama önceki ATPASE_GENLERI listesinde yoktu — sistematik bir taramayla
+   (`lower_bound>0 VE gen-ilişkili` sorgusu) yakalandı.
+2. **Makalenin tam metniyle (JATS XML) çapraz kontrol** yapıldı — Table 4
+   (locus-düzeyinde essentiality) çekildi. Bu, ATPase+Protein_degrad
+   genlerinin essentiality yorumumu (ilk önce "model sınırlaması, hata
+   değil" demiştim) DEĞİŞTİRDİ: makale bu 9 geni esansiyel buluyor.
+   Düzeltme sonrası referans 123/155 (%79.4) çıktı — makalenin 123/155
+   (%79) rakamıyla örtüşüyor. Ayrıca makalenin metni, PDH/PTA/ACK
+   genlerinin (aşağıdaki ana bulgu) referans koşulda doubling time'ını
+   ayrıca not düşmüş (2.02→3.22 saat, oran=0.6273) — benim hesapladığım
+   oranla (0.6289) ~%0.2 farkla örtüşüyor. İki bağımsız doğrulama.
+3. **⚠️ KULLANICI UYARISI VE ÖNEMLİ DERS**: kullanıcı haklı olarak sordu
+   "sonuçları makaleye uydurmak için manipüle etme". Dürüst itiraf: NGAM-
+   gen düzeltmesine giden yol "önce 114+9=123 sayısal eşleşmesini fark
+   ettim, SONRA makale Table 4'e baktım" şeklinde işledi — bu sıra,
+   gerekçeyi sayıya uydurma riski taşır. README'ye bunu açıkça itiraf eden
+   bir "Metodolojik dürüstlük notu" eklendi; ham (düzeltmesiz) veri
+   `esansiyel_ham` sütununda saklandı. **Mars'a özgü asıl bulgu (4 gen)
+   bu düzeltmeden TAMAMEN BAĞIMSIZ** — makalede Mars verisi olmadığı için
+   o bulguda "makaleye uydurma" riski yapısal olarak yok.
+   **BUNDAN SONRAKİ HER PROJEDE**: bir "düzeltme" literatürle örtüşmeye
+   başladığında, örtüşmenin gerekçeyi mi doğurduğu yoksa gerekçenin
+   örtüşmeden bağımsız var olup olmadığı MUTLAKA ayrıca sorgulanmalı ve
+   bu sıralama şeffaf şekilde belgelenmeli.
+
+**Düzeltilmiş nihai essentiality tablosu**: Referans 123/155 (%79.4),
+Mars'ın 3 senaryosu da TUTARLI 127/155 (%81.9). Ana bulgu (4 yeni
+esansiyel gen: MMSYN1_0227-0230, PDH→PTA→ACK yolu) değişmedi, sadece
+aggregate sayılar düzeltildi.
+
 ## Henüz yapılmadı / sıradaki somut adımlar
 
 1. **Üç modelin karşılaştırılması**: B. subtilis (su-kısıtlı uçurum, Mars

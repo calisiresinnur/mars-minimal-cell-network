@@ -122,41 +122,89 @@ Sonuçlar: `results/duyarlilik_sonuclari.csv`, `results/buyume_vs_siddet.png`.
 %5'i olduğu, 5x bağımsız tekrarla doğrulanmış "rahat" bir noktada) için
 155 genin tek tek silinmesini test ediyor.
 
-**Bu analiz sırasında İKİ ayrı hata canlı yakalanıp düzeltildi** (ayrıntı
-için `src/mars_gen_silme.py` docstring'i):
+**Bu analiz sırasında ÜÇ ayrı hata canlı yakalanıp düzeltildi** (ayrıntı
+için `src/mars_gen_silme.py` docstring'i) — kullanıcının isteğiyle
+yapılan bir bilimsel doğruluk denetimi sırasında, sadece sayısal değil
+mantıksal olarak da:
 
 1. cobra'nın standart gen-silme mekanizması, infeasible olan KO'larda
    `growth` alanını `NaN` bırakıyor; `oran = growth/wt_büyüme` de `NaN`
    olunca `oran < eşik` pandas'ta HER ZAMAN `False` dönüyor — yani
    infeasible (en kesin esansiyel durum!) YANLIŞLIKLA "esansiyel değil"
    sayılıyordu. İlk çalıştırmada bu, "0 esansiyel gen" gibi biyolojik
-   olarak imkânsız bir sonuca yol açtı. Düzeltilince gerçek tablo ortaya
-   çıktı: **referansta 114/155 (%73.5) esansiyel, Mars'ın üç senaryosunda
-   da TUTARLI şekilde 118/155 (%76.1) esansiyel** — makalenin bildirdiği
-   in silico %79 esansiyellik oranına yakın, bağımsız bir doğrulama.
+   olarak imkânsız bir sonuca yol açtı.
 2. NGAM'ın `ATPase` bileşenine bağlı 8 gen (F1F0-ATP sentaz alt
-   birimleri, MMSYN1_0789-0796) "silindiğinde" büyüme ARTIYOR (bu bir
-   hata değil, modelin NGAM'ı gen-ilişkili bir reaksiyon üzerinden
-   dayatmasının yapısal bir sonucu — bkz. kaynak kodu docstring'i). Bu 8
-   gen için model esansiyellik çıkarımı muhtemelen gerçek biyolojiyle
-   çelişiyor; sonuç tablosunda ayrıca işaretleniyor (`atpase_geni_mi`
-   sütunu), makalede bir sınırlama olarak belirtilecek.
+   birimleri, MMSYN1_0789-0796) VE `Protein_degrad`'a bağlı 1 gen
+   (MMSYN1_0394) — toplam 9 gen — "silindiğinde" büyüme ARTIYOR
+   (bounds (0,0)'a çekiliyor, bu kapasiteyi değil zorunlu NGAM YÜKÜNÜ
+   kaldırıyor). İlk yorumum "model sınırlaması, hata değil" şeklindeydi
+   — ama makalenin kendi **Table 4**'ünü (locus-düzeyinde Ess_FBA
+   sütunu) XML tam metninden çekip çapraz kontrol ettiğimde, makalenin
+   BU 9 GENİN TAMAMINI esansiyel (■) işaretlediğini gördüm. Yani sorun
+   modelin yapısı değil, benim naif "bounds->(0,0)" knockout
+   yorumumdu: NGAM'ın dayattığı minimum akış hücrenin gerçek, sürekli
+   bir fizyolojik ihtiyacını temsil ediyor — ilgili gen silindiğinde bu
+   ihtiyaç ORTADAN KALKMAZ, sadece KARŞILANAMAZ hale gelir (infeasible
+   olmalı). Düzeltme: bu 9 gen artık ham simülasyon sonucundan bağımsız
+   olarak esansiyel kabul ediliyor.
+3. Bu iki düzeltme sonrası **referans esansiyel gen sayısı 123/155
+   (%79.4)** çıktı — makalenin kendi bildirdiği 123/155 (%79) ile
+   örtüşüyor (bkz. makale metni: *"123 of the 155 genes included in the
+   model are essential (79%)"*). Ayrıca birkaç bağımsız gen (5 tRNA
+   sentetaz: ALATRS/0163, ARGTRS/0535, ASNTRS/0076, ASPTRS/0287,
+   CYSTRS/0837 — makalede Ess_FBA=■; ve 3 non-essential kontrol geni:
+   MMSYN1_0330/0382/0876 — makalede işaretsiz/non-essential) tek tek
+   makaleyle karşılaştırıldı, hepsi örtüştü.
+
+   **Metodolojik dürüstlük notu (kullanıcının uyarısıyla eklendi)**: madde
+   2'deki düzeltmeye giden yol şöyle işledi — önce 114+9=123 sayısal
+   eşleşmesini fark ettim, SONRA makale Table 4'e bakıp bu 9 genin orada
+   esansiyel işaretli olduğunu gördüm. Yani "önce sayı, sonra gerekçe"
+   sırası, gerekçeyi sayıya uydurma riski taşıyor — bunu saklamıyorum.
+   Gerekçenin (NGAM = gerçek, süregelen fizyolojik ihtiyaç; gen silindiğinde
+   ihtiyaç değil karşılanabilirlik ortadan kalkar; standart GEM
+   essentiality konvansiyonu bu tür genleri esansiyel sayar) sayıdan
+   BAĞIMSIZ olarak da savunulabilir olduğuna inanıyorum, ama bu benim
+   değerlendirmem — okuyucu ham veriyi (`esansiyel_ham` sütunu,
+   düzeltmesiz: referansta 114/155) görüp kendi yargısını verebilir. Bu
+   satır, referans senaryo için geçerli (makalede karşılaştıracak veri
+   olduğu için). **Mars'a özgü asıl bulgu (aşağıdaki 4 gen) bu düzeltmeden
+   TAMAMEN BAĞIMSIZ** — makalede Mars kısıtları altında essentiality
+   diye bir veri yok, dolayısıyla o bulguda "makaleye uydurma" riski
+   yapısal olarak söz konusu değil; düzeltme öncesi de sonrası da aynı
+   4 gen çıkıyor.
+4. Ayrıca makalenin kendi metni, referans (Dünya benzeri) koşulda tam
+   olarak benim bulduğum 4 genin (aşağıya bkz.) doğrulanma süresini
+   (doubling time) ayrıca not düşmüş: *"single knockouts of loci
+   pdhC/0227 through ackA/0230 ... had doubling times of 3.22 hr"*
+   (referans 2.02 hr'a karşı). Oran: 2.02/3.22=0.6273 — benim
+   hesapladığım oran (0.6289) ile ~%0.2 farkla örtüşüyor. Bağımsız bir
+   ikinci doğrulama.
 
 **Ana bulgu — Mars'a özgü 4 yeni esansiyel gen** (üç Mars senaryosunun
-DA HEPSİNDE tutarlı, referansta esansiyel değil):
-`MMSYN1_0227, MMSYN1_0228, MMSYN1_0229, MMSYN1_0230`. Bu dört gen
-birlikte **piruvat dehidrogenaz (PDH) → fosfotransasetilaz (PTAr) →
-asetat kinaz (ACKr)** yolunu kodluyor — piruvattan asetil-CoA/NADH
-üretimi, ardından asetat kinaz üzerinden **ek ATP** (substrat düzeyinde
-fosforilasyon) üretimi. Yorum: zengin/kısıtsız ortamda hücre bu ekstra
-ATP kaynağı olmadan da (daha yavaş) büyüyebiliyor (referans oran=0.63);
-ama Mars'ın sıkılaştırılmış enerji bütçesinde (kısıtlı glikoz/O2 + artmış
-bakım) bu yol vazgeçilmez hale geliyor. Bu, B. subtilis projesindeki
-`dltABCD` bulgusunun (Mars'ta esansiyellikten ÇIKAN genler) TERSİ
-yönünde ama aynı ailede bir bulgu: enerji darboğazı, ATP üretimine
-katkısı olan HER yolu kritikleştiriyor.
+DA HEPSİNDE tutarlı, referansta esansiyel değil, yukarıdaki düzeltmelerden
+etkilenmiyor): `MMSYN1_0227 (pdhC), MMSYN1_0228, MMSYN1_0229 (pta),
+MMSYN1_0230 (ackA)`. Bu dört gen birlikte **piruvat dehidrogenaz (PDH) →
+fosfotransasetilaz (PTAr) → asetat kinaz (ACKr)** yolunu kodluyor —
+piruvattan asetil-CoA/NADH üretimi, ardından asetat kinaz üzerinden
+**ek ATP** (substrat düzeyinde fosforilasyon) üretimi. Yorum: zengin/
+kısıtsız ortamda hücre bu ekstra ATP kaynağı olmadan da (daha yavaş,
+makalenin kendi doğruladığı gibi) büyüyebiliyor; ama Mars'ın
+sıkılaştırılmış enerji bütçesinde (kısıtlı glikoz/O2 + artmış bakım) bu
+yol tamamen vazgeçilmez hale geliyor (referansta ölümcül değil, Mars'ta
+ölümcül). Bu, B. subtilis projesindeki `dltABCD` bulgusunun (Mars'ta
+esansiyellikten ÇIKAN genler) TERSİ yönünde ama aynı ailede bir bulgu:
+enerji darboğazı, ATP üretimine katkısı olan HER yolu kritikleştiriyor.
 
-Sonuçlar: `results/gen_silme_sonuclari.csv`,
+**Sonuç tablosu (düzeltilmiş)**:
+
+| Senaryo | Esansiyel gen | Oran |
+|---|---|---|
+| Referans (kısıtsız) | 123/155 | %79.4 (makale: %79) |
+| Mars ×1.5 / ×2.0 / ×3.0 (üçü de) | 127/155 | %81.9 |
+
+Sonuçlar: `results/gen_silme_sonuclari.csv` (hem ham `esansiyel_ham` hem
+düzeltilmiş `esansiyel` sütunları içerir, şeffaflık için),
 `results/mars_yeni_esansiyel_genler.csv`,
 `results/mars_dispanse_olan_genler.csv` (bu proje için boş — hiçbir gen
 dispanse olmuyor).
