@@ -1,5 +1,9 @@
 # mars-minimal-cell-network
 
+> Bu proje, dört kardeş projeden biridir. Hepsini karşılaştıran sentez
+> tablosu için bkz.
+> [mars-hybrid-organism-network/KARSILASTIRMA.md](https://github.com/calisiresinnur/mars-hybrid-organism-network/blob/main/KARSILASTIRMA.md).
+
 Mars yüzey koşullarında bir **minimal sentetik hücrenin** (JCVI-syn3A,
 genom-ölçekli metabolik model + FBA ile) metabolik olarak canlı kalıp
 kalamayacağını hesaplamalı incelemek.
