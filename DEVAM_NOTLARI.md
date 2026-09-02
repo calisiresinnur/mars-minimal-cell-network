@@ -1,6 +1,15 @@
 # Proje Devam Notları — mars-minimal-cell-network
 
-Son güncelleme: 2026-08-31
+Son güncelleme: 2026-09-01
+
+## ⚠️ EN SON GÜNCELLEME (2026-09-01) — buraya önce bak
+
+`mars-minimal-gene-network`'teki kritik düzeltme (tekli-silme "esansiyel
+gen" ≠ "minimal gen ağı") burada da test edildi: `src/minimal_ag_insa.py`.
+Sonuç: 123 (tekli-silme) → 125 (gerçek minimal ağ) — sadece +2 fark
+(B. subtilis'teki +91'e göre ÇARPICI şekilde küçük). Yorum: JCVI-syn3A
+zaten sentetik minimize edilmiş, doğal organizmalardaki gibi büyük
+izoenzim yedekliliği yok. Detay: README > "Düzeltme" bölümü.
 
 Bu dosya `mars-minimal-gene-network/DEVAM_NOTLARI.md`'nin devamıdır — o
 dosyanın madde 5-6'sında planlanan "minimal sentetik hücre" yönü burada

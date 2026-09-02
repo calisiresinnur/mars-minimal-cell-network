@@ -4,6 +4,27 @@
 > tablosu için bkz.
 > [mars-hybrid-organism-network/KARSILASTIRMA.md](https://github.com/calisiresinnur/mars-hybrid-organism-network/blob/main/KARSILASTIRMA.md).
 
+## ⚠️ Düzeltme (2026-09-01): "esansiyel gen" ≠ "minimal gen ağı"
+
+`mars-minimal-gene-network`'te (B. subtilis/Salinibacter) bulunan
+kritik ders burada da test edildi: tekli gen silme testi, izoenzim/
+yedek-yol gruplarını yakalayamıyor. `src/minimal_ag_insa.py` ile
+genleri TEK TEK, o ana kadar indirgenmiş ağa göre test eden ARDIŞIK bir
+indirgeme yapıldı (NGAM istisna genleri — bkz. aşağıdaki essentiality
+paradoksu — baştan korunarak, hiç test edilmeden).
+
+**Sonuç: 123 (tekli-silme) → 125 (gerçek minimal ağ) — sadece +2 gen
+fark.** Bu, B. subtilis'teki (+91) ve Salinibacter'deki (+76) devasa
+farktan ÇARPICI ŞEKİLDE küçük. Yorum: **JCVI-syn3A zaten sentetik
+olarak minimize edilmiş bir genom** — doğal organizmalardaki gibi
+büyük izoenzim/yedek-yol yedekliliği neredeyse hiç kalmamış, bu yüzden
+tekli-silme testi burada gerçeğe çok daha yakın bir tahmin veriyor.
+İndirgenmiş ağ feasible, büyüme WT'nin ~%18'i (0.0617 vs 0.3424) —
+B. subtilis/Salinibacter'deki ~%1.5-6.4'ten daha yüksek, yine "zaten az
+yedekli" hikayesiyle tutarlı.
+
+Detay: `src/minimal_ag_insa.py` docstring'i, `results/minimal_ag_*.csv`.
+
 Mars yüzey koşullarında bir **minimal sentetik hücrenin** (JCVI-syn3A,
 genom-ölçekli metabolik model + FBA ile) metabolik olarak canlı kalıp
 kalamayacağını hesaplamalı incelemek.
