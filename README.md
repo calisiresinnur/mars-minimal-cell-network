@@ -335,7 +335,8 @@ python src/mars_fba.py
 └── src/
     ├── mars_fba.py           # Model yükleme + Mars kısıtları + FBA
     ├── mars_duyarlilik.py    # Duyarlılık analizi + grafik
-    └── mars_gen_silme.py     # Tekli gen silme (SOLVER_TOLERANCE=1e-9)
+    ├── mars_gen_silme.py     # Tekli gen silme (SOLVER_TOLERANCE=1e-9)
+    └── minimal_ag_insa.py    # GERÇEK minimal ağ (ardışık indirgeme) — bkz. aşağıdaki düzeltme
 ```
 
 ## Kaynaklar
