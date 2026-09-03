@@ -25,6 +25,19 @@ yedekli" hikayesiyle tutarlı.
 
 Detay: `src/minimal_ag_insa.py` docstring'i, `results/minimal_ag_*.csv`.
 
+## Mars senaryoları da yeniden test edildi — PDH/PTA/ACK bulgusu DOĞRULANDI
+
+Aynı ardışık yöntem 3 Mars senaryosunda da çalıştırıldı (NGAM istisna
+genleri korunarak). Sonuç: fark tutarlı şekilde **+2 gen** kaldı hem
+referansta (123→125) hem Mars'ta (127→129) — ve **Mars'a özgü tek fark
+hâlâ aynı 4 gen**: `MMSYN1_0227/0228/0229/0230` (PDH→PTA→ACK yolu).
+
+Bu, önceki (tekli-silme) analizle bulunan ana bulgunun **gerçekten
+sağlam** olduğunu doğruluyor — JCVI-syn3A zaten o kadar az yedekli ki
+tekli-silme testi burada ciddi bir hataya yol açmıyor (B. subtilis'teki
+gibi devasa bir düzeltme gerekmedi). Detay:
+`results/minimal_ag_ozet_tum_senaryolar.csv`.
+
 Mars yüzey koşullarında bir **minimal sentetik hücrenin** (JCVI-syn3A,
 genom-ölçekli metabolik model + FBA ile) metabolik olarak canlı kalıp
 kalamayacağını hesaplamalı incelemek.

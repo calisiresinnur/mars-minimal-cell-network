@@ -11,6 +11,11 @@ Sonuç: 123 (tekli-silme) → 125 (gerçek minimal ağ) — sadece +2 fark
 zaten sentetik minimize edilmiş, doğal organizmalardaki gibi büyük
 izoenzim yedekliliği yok. Detay: README > "Düzeltme" bölümü.
 
+**Mars senaryoları da test edildi (aynı gün, ikinci tur)**: PDH/PTA/ACK
+bulgusu ardışık indirgeme yöntemiyle DOĞRULANDI — hem referansta hem
+Mars'ta fark tutarlı +2 gen, Mars'a özgü tek fark hâlâ aynı 4 gen
+(MMSYN1_0227-0230). Detay: README > "PDH/PTA/ACK bulgusu DOĞRULANDI".
+
 Bu dosya `mars-minimal-gene-network/DEVAM_NOTLARI.md`'nin devamıdır — o
 dosyanın madde 5-6'sında planlanan "minimal sentetik hücre" yönü burada
 ayrı bir proje olarak yürütülüyor. Ana repo ve tüm geçmiş bulgular için

@@ -1,0 +1,5 @@
+senaryo,tekli_silme_sayisi,gercek_minimal_sayisi,fark,indirgenmis_ag_buyume
+Referans_kisitsiz,123,125,2,0.06168831288750719
+Mars_bakim_x1.5_marj,127,129,2,0.008329735637501012
+Mars_bakim_x2.0_marj,127,129,2,0.008450936803386782
+Mars_bakim_x3.0_marj,127,129,2,0.008693339135158849
