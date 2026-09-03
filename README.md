@@ -38,6 +38,16 @@ tekli-silme testi burada ciddi bir hataya yol açmıyor (B. subtilis'teki
 gibi devasa bir düzeltme gerekmedi). Detay:
 `results/minimal_ag_ozet_tum_senaryolar.csv`.
 
+**Sıra-sağlamlık testi (2026-09-01)**: `mars-minimal-gene-network`'te
+B. subtilis'in minimal ağının genlerin test SIRASINA duyarlı olduğu
+bulundu (izoenzim gruplarından hangisinin tutulacağı sıraya bağlı).
+Aynı testi burada da yaptık: 2 farklı rastgele sıralamada JCVI-syn3A'nın
+sonucu **TAMAMEN DETERMİNİSTİK** çıktı — hem gen sayısı (125→129) hem
+Mars'a özgü tam gen listesi (MMSYN1_0227-0230) birebir aynı kaldı. Bu,
+JCVI-syn3A'nın PDH/PTA/ACK bulgusunun B. subtilis'teki bulgulardan DAHA
+GÜVENİLİR olduğu anlamına geliyor — az yedeklilik, az sıra-duyarlılığı
+demek.
+
 Mars yüzey koşullarında bir **minimal sentetik hücrenin** (JCVI-syn3A,
 genom-ölçekli metabolik model + FBA ile) metabolik olarak canlı kalıp
 kalamayacağını hesaplamalı incelemek.
